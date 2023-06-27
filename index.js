@@ -14,10 +14,12 @@ bot.on("message", async (msg) => {
 	const re = /^(https?:\/\/)?(www.youtube.com|youtu.be)\/.+$/;
 	url = msg.text;
 	let video_url = "";
+	let photo_url = "";
 
 	if (re.test(url)) {
 		try {
 			let res = await ytdl.getInfo(url);
+			photo_url = res.videoDetails.thumbnails.pop().url;
 			let formats = res.formats;
 			let list = [];
 			for (let i = 0; i < formats.length; i++) {
@@ -28,7 +30,11 @@ bot.on("message", async (msg) => {
 			video_url = list.pop();
 			await bot.sendVideo(chatId, video_url);
 		} catch (error) {
-			await bot.sendMessage(chatId, video_url);
+			await bot.sendPhoto(chatId, photo_url, {
+				reply_markup: {
+					inline_keyboard: [[{ text: "Download", url: video_url }]],
+				},
+			});
 		}
 	} else {
 		bot.sendMessage(chatId, "Invalid Youtube URL");
