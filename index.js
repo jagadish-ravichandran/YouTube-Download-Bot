@@ -11,7 +11,7 @@ const bot = new TelegramBot(token, { polling: true });
 bot.on("message", async (msg) => {
 	const chatId = msg.chat.id;
 
-	const re = /^(https?:\/\/)?(www.youtube.com|youtu.be)\/.+$/;
+	const re = /^(https?:\/\/)?(www.youtube.com|youtu.be|youtube.com)\/.+$/;
 	url = msg.text;
 	let video_data = {};
 
