@@ -13,27 +13,26 @@ bot.on("message", async (msg) => {
 
 	const re = /^(https?:\/\/)?(www.youtube.com|youtu.be)\/.+$/;
 	url = msg.text;
-	let video_url = "";
-	let photo_url = "";
+	let video_data = {};
 
 	if (re.test(url)) {
 		try {
 			let res = await ytdl.getInfo(url);
-			photo_url = res.videoDetails.thumbnails.pop().url;
+			video_data.photo_url = res.videoDetails.thumbnails.pop().url;
 			let formats = res.formats;
 			let list = [];
 			for (let i = 0; i < formats.length; i++) {
 				if (formats[i].hasAudio && formats[i].hasVideo) {
 					list.push(formats[i].url);
+					// console.log(formats[i]);
 				}
 			}
-			video_url = list.pop();
-			await bot.sendVideo(chatId, video_url);
+			video_data.video_url = list.pop();
+			await bot.sendChatAction(chatId, "upload_video");
+			await bot.sendVideo(chatId, video_data.video_url);
 		} catch (error) {
-			await bot.sendPhoto(chatId, photo_url, {
-				reply_markup: {
-					inline_keyboard: [[{ text: "Download", url: video_url }]],
-				},
+			await bot.sendPhoto(chatId, video_data.photo_url, {
+				caption: "This video size exceeds our limit!",
 			});
 		}
 	} else {
